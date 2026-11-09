@@ -153,17 +153,7 @@
       background-size: 18px;
     }
 
-    .page-indicator {
-      position: absolute;
-      bottom: 15px;
-      z-index: 20;
-      background: rgba(0, 0, 0, 0.6);
-      color: rgba(255, 255, 255, 0.9);
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 13px;
-      pointer-events: none;
-    }
+.page-indicator
 
     /* 開場「開始閱讀」遮罩層 */
     .start-overlay {
@@ -212,15 +202,9 @@
 
     <img id="book-img" class="book-image" src="" alt="繪本圖片">
 
-    <!-- 左右觸控與箭頭按鈕 -->
-    <div class="touch-zone touch-left" onclick="prevPage()">
-      <!-- 若有左鍵圖片可改為: <img src="graphics/left.png" class="nav-arrow-img"> -->
-      <img src="graphics/left.jpg" style="width: 40px; height: auto;">
-    </div>
-    <div class="touch-zone touch-right" onclick="nextPage()">
-      <!-- 若有右鍵圖片可改為: <img src="graphics/right.png" class="nav-arrow-img"> -->
-      <img src="graphics/right.jpg" style="width: 40px; height: auto;">
-    </div>
+<!-- 畫面左右透明觸控翻頁區 (保持點擊左/右畫面即可翻頁的功能) -->
+    <div class="touch-zone touch-left" onclick="prevPage()"></div>
+    <div class="touch-zone touch-right" onclick="nextPage()"></div>
 
     <!-- 右上角功能選單 -->
     <div class="top-controls">
@@ -230,7 +214,6 @@
 
       <!-- 朗讀按鈕 -->
       <button class="btn" onclick="replayVoice()">
-        <!-- ⚠️ 請確認你的朗讀圖示檔名，例如 graphics/read.png -->
         <img src="graphics/read.jpg" class="btn-icon-img" alt="朗讀">
         朗讀
       </button>
@@ -242,8 +225,18 @@
       <button id="mute-btn" class="btn" onclick="toggleMute()">🔊</button>
     </div>
 
-    <!-- 頁碼 -->
-    <div id="page-indicator" class="page-indicator">1 / 20</div>
+    <!-- 下方整合控制欄：左箭頭 + 頁碼 + 右箭頭 -->
+    <div class="bottom-controls">
+      <button class="nav-btn" onclick="prevPage()">
+        <img src="graphics/left.jpg" alt="上一頁">
+      </button>
+
+      <div id="page-indicator" class="page-text">1 / 20</div>
+
+      <button class="nav-btn" onclick="nextPage()">
+        <img src="graphics/right.jpg" alt="下一頁">
+      </button>
+    </div>
 
     <!-- 音效播放器 -->
     <audio id="bgm-audio" src="" loop></audio>
