@@ -34,7 +34,6 @@
       background: #000;
     }
 
-    /* 全螢幕模式時滿版顯示 */
     .book-container:fullscreen,
     .book-container:-webkit-full-screen {
       max-width: 100vw !important;
@@ -213,7 +212,7 @@
       <div id="progress-bar" class="progress-bar"></div>
     </div>
 
-    <!-- 開場封面與開始閱讀按鈕 (畫面正中間) -->
+    <!-- 開場封面與開始閱讀按鈕 -->
     <div id="start-overlay" class="start-overlay">
       <img src="graphics/0.jpg" alt="封面圖片" class="start-cover-img">
       <button class="start-btn" onclick="startBook()">📖 開始閱讀</button>
@@ -221,7 +220,7 @@
 
     <img id="book-img" class="book-image" src="" alt="繪本圖片">
 
-    <!-- 左右透明觸控翻頁區 (左邊上一頁，右邊下一頁) -->
+    <!-- 左右透明觸控翻頁區 -->
     <div class="touch-zone touch-left" onclick="prevPage()"></div>
     <div class="touch-zone touch-right" onclick="nextPage()"></div>
 
@@ -304,7 +303,6 @@
       pageSelect.appendChild(opt);
     });
 
-    // 點擊「📖 開始閱讀」時同步發聲並啟動音樂
     function startBook() {
       document.getElementById('start-overlay').style.display = 'none';
       hasStarted = true;
