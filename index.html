@@ -34,6 +34,23 @@
       background: #000;
     }
 
+    /* 頂部極簡播放進度條 (不遮擋繪本) */
+    .progress-bar-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      z-index: 30;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #4caf50;
+      transition: width 0.1s linear;
+    }
+
     .book-image {
       max-width: 100%;
       max-height: 100%;
@@ -41,76 +58,178 @@
       pointer-events: none;
     }
 
+    /* 左右點擊翻頁區 */
     .touch-zone {
       position: absolute;
       top: 0;
       bottom: 0;
-      width: 50%;
+      width: 40%;
       z-index: 10;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .touch-left { left: 0; }
     .touch-right { right: 0; }
 
-    .mute-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      z-index: 20;
-      background: rgba(0, 0, 0, 0.5);
-      border: 2px solid rgba(255, 255, 255, 0.7);
-      color: white;
-      font-size: 20px;
-      width: 44px;
-      height: 44px;
+    /* 左右翻頁圖片圖示 (預設使用文字箭頭，可用圖片替換) */
+    .nav-arrow {
+      font-size: 32px;
+      color: rgba(255, 255, 255, 0.5);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 10px 16px;
       border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    .touch-zone:hover .nav-arrow { opacity: 1; }
+    /* 若有左右箭頭圖片，取消註解下行並填入圖片路徑:
+    .nav-arrow-img { width: 40px; height: 40px; }
+    */
+
+    /* 右上角控制列 */
+    .top-controls {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 20;
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn, .select-btn {
+      background: rgba(0, 0, 0, 0.65);
+      border: 1.5px solid rgba(255, 255, 255, 0.8);
+      color: white;
+      font-size: 14px;
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 19px;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
       transition: all 0.2s ease;
     }
-    .mute-btn:active { transform: scale(0.9); }
+    .btn:active { transform: scale(0.92); }
+    
+    /* 朗讀圖片按鈕樣式 */
+    .btn-icon-img {
+      height: 20px;
+      width: auto;
+      margin-right: 4px;
+    }
+
+    .select-btn {
+      outline: none;
+      appearance: none;
+      padding-right: 24px;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 4px center;
+      background-size: 18px;
+    }
 
     .page-indicator {
       position: absolute;
       bottom: 15px;
       z-index: 20;
-      background: rgba(0, 0, 0, 0.5);
-      color: rgba(255, 255, 255, 0.8);
+      background: rgba(0, 0, 0, 0.6);
+      color: rgba(255, 255, 255, 0.9);
       padding: 4px 12px;
       border-radius: 12px;
-      font-size: 14px;
+      font-size: 13px;
       pointer-events: none;
     }
+
+    /* 開場「開始閱讀」遮罩層 */
+    .start-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+    .start-btn {
+      font-size: 20px;
+      padding: 14px 36px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+      transition: transform 0.2s;
+    }
+    .start-btn:active { transform: scale(0.95); }
   </style>
 </head>
 <body>
 
-  <div class="book-container">
+  <div class="book-container" id="book-container">
+    <!-- 頂部進度條 -->
+    <div class="progress-bar-container">
+      <div id="progress-bar" class="progress-bar"></div>
+    </div>
+
+    <!-- 開場點擊體驗遮罩 -->
+    <div id="start-overlay" class="start-overlay">
+      <h2 style="margin-bottom: 20px;">歡迎來到數位有聲繪本</h2>
+      <button class="start-btn" onclick="startBook()">📖 開始閱讀</button>
+    </div>
+
     <img id="book-img" class="book-image" src="" alt="繪本圖片">
 
-    <!-- 左右點擊翻頁 -->
-    <div class="touch-zone touch-left" onclick="prevPage()"></div>
-    <div class="touch-zone touch-right" onclick="nextPage()"></div>
+    <!-- 左右觸控與箭頭按鈕 -->
+    <div class="touch-zone touch-left" onclick="prevPage()">
+      <!-- 若有左鍵圖片可改為: <img src="graphics/left.png" class="nav-arrow-img"> -->
+      <span class="nav-arrow">❮</span>
+    </div>
+    <div class="touch-zone touch-right" onclick="nextPage()">
+      <!-- 若有右鍵圖片可改為: <img src="graphics/right.png" class="nav-arrow-img"> -->
+      <span class="nav-arrow">❯</span>
+    </div>
 
-    <!-- 右上角靜音開關 -->
-    <button id="mute-btn" class="mute-btn" onclick="toggleMute()">🔊</button>
+    <!-- 右上角功能選單 -->
+    <div class="top-controls">
+      <!-- 目錄選單 -->
+      <select id="page-select" class="select-btn" onchange="jumpToPage(this.value)">
+      </select>
 
-    <!-- 頁碼標示 -->
+      <!-- 朗讀按鈕 (可以替換成圖片) -->
+      <button class="btn" onclick="replayVoice()">
+        <!-- 💡 若要替換成朗讀圖片，請取消下行註解並改路徑： -->
+        <!-- <img src="graphics/read.png" class="btn-icon-img" alt="朗讀"> -->
+        朗讀
+      </button>
+
+      <!-- 全螢幕切換按鈕 -->
+      <button class="btn" onclick="toggleFullscreen()">⛶ 全螢幕</button>
+
+      <!-- 靜音切換按鈕 -->
+      <button id="mute-btn" class="btn" onclick="toggleMute()">🔊</button>
+    </div>
+
+    <!-- 頁碼 -->
     <div id="page-indicator" class="page-indicator">1 / 20</div>
 
-    <!-- 雙音軌播放器 -->
+    <!-- 音效播放器 -->
     <audio id="bgm-audio" src="" loop></audio>
     <audio id="voice-audio" src=""></audio>
   </div>
 
   <script>
-    // -------------------------------------------------------------
-    // 手動或對應 20 頁的素材資料
-    // 如果第 1~2 頁用 bgm1，第 3~4 頁用 bgm2 ... 可以在這裡彈性分配！
-    // -------------------------------------------------------------
     const pages = [
       { img: 'graphics/0.jpg',  voice: 'assets/speech0.mp3',  bgm: 'music/music0.mp3' },
       { img: 'graphics/1.jpg',  voice: 'assets/speech1.mp3',  bgm: 'music/music1.mp3' },
@@ -136,39 +255,88 @@
 
     let currentPage = 0;
     let isMuted = false;
+    let hasStarted = false;
 
     const imgEl = document.getElementById('book-img');
     const voiceEl = document.getElementById('voice-audio');
     const bgmEl = document.getElementById('bgm-audio');
     const muteBtn = document.getElementById('mute-btn');
     const pageIndicator = document.getElementById('page-indicator');
+    const pageSelect = document.getElementById('page-select');
+    const progressBar = document.getElementById('progress-bar');
 
-    // 背景音樂音量維持 30%，避免蓋過旁白語音
-    bgmEl.volume = 0.3;
+    // 預設音量：朗讀 100%，BGM 靜音預設 0.35
+    const BGM_NORMAL_VOL = 0.35;
+    const BGM_DUCK_VOL = 0.10; // 朗讀時背景音樂降至 10%
+    voiceEl.volume = 1.0;
+    bgmEl.volume = BGM_NORMAL_VOL;
+
+    // 動態填入目錄選單
+    pages.forEach((_, index) => {
+      const opt = document.createElement('option');
+      opt.value = index;
+      opt.innerText = `第 ${index + 1} 頁`;
+      pageSelect.appendChild(opt);
+    });
+
+    // 點擊「開始閱讀」開場
+    function startBook() {
+      document.getElementById('start-overlay').style.display = 'none';
+      hasStarted = true;
+      renderPage();
+    }
 
     function renderPage() {
       const page = pages[currentPage];
       imgEl.src = page.img;
       voiceEl.src = page.voice;
       
-      // 如果下一頁的背景音樂跟這一頁不同，才重新更換 BGM 播放
+      // 更新目錄下拉與頁碼標示
+      pageSelect.value = currentPage;
+      pageIndicator.innerText = `${currentPage + 1} / ${pages.length}`;
+      progressBar.style.width = '0%';
+
+      // 換背景音樂處理
       const currentBgmName = bgmEl.getAttribute('data-current');
       if (currentBgmName !== page.bgm) {
         bgmEl.src = page.bgm;
         bgmEl.setAttribute('data-current', page.bgm);
-        if (!isMuted) {
+        if (!isMuted && hasStarted) {
           bgmEl.currentTime = 0;
-          bgmEl.play().catch(err => console.log("BGM 播放需點擊互動:", err));
+          bgmEl.play().catch(e => console.log(e));
         }
       }
 
-      pageIndicator.innerText = `${currentPage + 1} / ${pages.length}`;
-
-      if (!isMuted) {
-        voiceEl.currentTime = 0;
-        voiceEl.play().catch(err => console.log("語音播放需點擊互動:", err));
+      if (!isMuted && hasStarted) {
+        replayVoice();
       }
     }
+
+    // 重播當前頁面朗讀 + 背景音樂壓音控制
+    function replayVoice() {
+      voiceEl.currentTime = 0;
+      // 朗讀開始時，將 BGM 音量調低以避開人聲 (Ducking)
+      bgmEl.volume = BGM_DUCK_VOL;
+      
+      voiceEl.play().catch(e => console.log(e));
+      if (bgmEl.paused && hasStarted && !isMuted) {
+        bgmEl.play().catch(e => console.log(e));
+      }
+    }
+
+    // 當朗讀播放完畢，自動還原 BGM 音量
+    voiceEl.onended = function() {
+      bgmEl.volume = BGM_NORMAL_VOL;
+      progressBar.style.width = '100%';
+    };
+
+    // 音訊進度更新 (控制頂部進度條)
+    voiceEl.ontimeupdate = function() {
+      if (voiceEl.duration) {
+        const pct = (voiceEl.currentTime / voiceEl.duration) * 100;
+        progressBar.style.width = `${pct}%`;
+      }
+    };
 
     function nextPage() {
       if (currentPage < pages.length - 1) {
@@ -184,20 +352,44 @@
       }
     }
 
+    function jumpToPage(index) {
+      currentPage = parseInt(index);
+      renderPage();
+    }
+
     function toggleMute() {
       isMuted = !isMuted;
       voiceEl.muted = isMuted;
       bgmEl.muted = isMuted;
       muteBtn.innerText = isMuted ? '🔇' : '🔊';
 
-      if (!isMuted) {
-        voiceEl.currentTime = 0;
-        voiceEl.play();
+      if (!isMuted && hasStarted) {
+        replayVoice();
         bgmEl.play();
       }
     }
 
-    // 初始化第一頁
+    // 全螢幕切換
+    function toggleFullscreen() {
+      const elem = document.getElementById('book-container');
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(err => alert(`無法進入全螢幕: ${err.message}`));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // 鍵盤左右鍵控制翻頁 (← 上一頁, → 下一頁)
+    document.addEventListener('keydown', (e) => {
+      if (!hasStarted) return;
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        nextPage();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevPage();
+      }
+    });
+
+    // 預設渲染第一頁背景
     renderPage();
   </script>
 </body>
