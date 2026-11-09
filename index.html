@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>數位有聲繪本</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body {
+      background-color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* 繪本容器 */
+    .book-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      max-width: 1200px;
+      max-height: 800px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+    }
+
+    /* 圖片顯示 */
+    .book-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    /* 左右點擊觸控區 */
+    .touch-zone {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      z-index: 10;
+      cursor: pointer;
+    }
+    .touch-left {
+      left: 0;
+    }
+    .touch-right {
+      right: 0;
+    }
+
+    /* 右上角靜音按鈕 */
+    .mute-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 20;
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.7);
+      color: white;
+      font-size: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s ease;
+    }
+    .mute-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* 頁碼提示 */
+    .page-indicator {
+      position: absolute;
+      bottom: 15px;
+      z-index: 20;
+      background: rgba(0, 0, 0, 0.5);
+      color: rgba(255, 255, 255, 0.8);
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 14px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="book-container">
+    <img id="book-img" class="book-image" src="" alt="繪本圖片">
+
+    <!-- 左、右觸控點擊區 -->
+    <div class="touch-zone touch-left" onclick="prevPage()"></div>
+    <div class="touch-zone touch-right" onclick="nextPage()"></div>
+
+    <!-- 右上角靜音按鈕 -->
+    <button id="mute-btn" class="mute-btn" onclick="toggleMute()">🔊</button>
+
+    <!-- 當前頁數標示 -->
+    <div id="page-indicator" class="page-indicator">1 / 1</div>
+
+    <!-- 背景語音播放器 -->
+    <audio id="book-audio" src=""></audio>
+  </div>
+
+  <script>
+    // ⚠️ 請依據你在 assets 資料夾內的實際檔名填寫清單：
+    const pages = [
+      { img: 'assets/page1.jpg', audio: 'assets/page1.mp3' },
+      { img: 'assets/page2.jpg', audio: 'assets/page2.mp3' },
+      { img: 'assets/page3.jpg', audio: 'assets/page3.mp3' }
+    ];
+
+    let currentPage = 0;
+    let isMuted = false;
+
+    const imgEl = document.getElementById('book-img');
+    const audioEl = document.getElementById('book-audio');
+    const muteBtn = document.getElementById('mute-btn');
+    const pageIndicator = document.getElementById('page-indicator');
+
+    function renderPage() {
+      const page = pages[currentPage];
+      imgEl.src = page.img;
+      audioEl.src = page.audio;
+      pageIndicator.innerText = `${currentPage + 1} / ${pages.length}`;
+
+      if (!isMuted) {
+        audioEl.currentTime = 0;
+        audioEl.play().catch(err => {
+          console.log("自動播放需與使用者互動:", err);
+        });
+      }
+    }
+
+    function nextPage() {
+      if (currentPage < pages.length - 1) {
+        currentPage++;
+        renderPage();
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 0) {
+        currentPage--;
+        renderPage();
+      }
+    }
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      audioEl.muted = isMuted;
+      muteBtn.innerText = isMuted ? '🔇' : '🔊';
+      
+      if (!isMuted) {
+        audioEl.currentTime = 0;
+        audioEl.play();
+      }
+    }
+
+    // 初始化載入
+    renderPage();
+  </script>
+</body>
+</html>
