@@ -194,11 +194,11 @@
     <!-- 左右觸控與箭頭按鈕 -->
     <div class="touch-zone touch-left" onclick="prevPage()">
       <!-- 若有左鍵圖片可改為: <img src="graphics/left.png" class="nav-arrow-img"> -->
-      <span class="nav-arrow">❮</span>
+      <img src="graphics/left.png" style="width: 40px; height: auto;">
     </div>
     <div class="touch-zone touch-right" onclick="nextPage()">
       <!-- 若有右鍵圖片可改為: <img src="graphics/right.png" class="nav-arrow-img"> -->
-      <span class="nav-arrow">❯</span>
+      <img src="graphics/right.png" style="width: 40px; height: auto;">
     </div>
 
     <!-- 右上角功能選單 -->
@@ -209,10 +209,9 @@
 
       <!-- 朗讀按鈕 (可以替換成圖片) -->
       <button class="btn" onclick="replayVoice()">
-        <!-- 💡 若要替換成朗讀圖片，請取消下行註解並改路徑： -->
-        <!-- <img src="graphics/read.png" class="btn-icon-img" alt="朗讀"> -->
-        朗讀
-      </button>
+  <!-- <img src="graphics/read.png" class="btn-icon-img" alt="朗讀"> -->
+  朗讀
+</button>
 
       <!-- 全螢幕切換按鈕 -->
       <button class="btn" onclick="toggleFullscreen()">⛶ 全螢幕</button>
@@ -231,26 +230,26 @@
 
   <script>
     const pages = [
-      { img: 'graphics/0.jpg',  voice: 'assets/speech0.mp3',  bgm: 'music/music0.mp3' },
-      { img: 'graphics/1.jpg',  voice: 'assets/speech1.mp3',  bgm: 'music/music1.mp3' },
-      { img: 'graphics/2.jpg',  voice: 'assets/speech2.mp3',  bgm: 'music/music2.mp3' },
-      { img: 'graphics/3.jpg',  voice: 'assets/speech3.mp3',  bgm: 'music/music3.mp3' },
-      { img: 'graphics/4.jpg',  voice: 'assets/speech4.mp3',  bgm: 'music/music4.mp3' },
-      { img: 'graphics/5.jpg',  voice: 'assets/speech5.mp3',  bgm: 'music/music5.mp3' },
-      { img: 'graphics/6.jpg',  voice: 'assets/speech6.mp3',  bgm: 'music/music6.mp3' },
-      { img: 'graphics/7.jpg',  voice: 'assets/speech7.mp3',  bgm: 'music/music7.mp3' },
-      { img: 'graphics/8.jpg',  voice: 'assets/speech8.mp3',  bgm: 'music/music8.mp3' },
-      { img: 'graphics/9.jpg',  voice: 'assets/speech9.mp3',  bgm: 'music/music9.mp3' },
-      { img: 'graphics/10.jpg', voice: 'assets/speech10.mp3', bgm: 'music/music10.mp3' },
-      { img: 'graphics/11.jpg', voice: 'assets/speech11.mp3', bgm: 'music/music11.mp3' },
-      { img: 'graphics/12.jpg', voice: 'assets/speech12.mp3', bgm: 'music/music12.mp3' },
-      { img: 'graphics/13.jpg', voice: 'assets/speech13.mp3', bgm: 'music/music13.mp3' },
-      { img: 'graphics/14.jpg', voice: 'assets/speech14.mp3', bgm: 'music/music14.mp3' },
-      { img: 'graphics/15.jpg', voice: 'assets/speech15.mp3', bgm: 'music/music15.mp3' },
-      { img: 'graphics/16.jpg', voice: 'assets/speech16.mp3', bgm: 'music/music16.mp3' },
-      { img: 'graphics/17.jpg', voice: 'assets/speech17.mp3', bgm: 'music/music17.mp3' },
-      { img: 'graphics/18.jpg', voice: 'assets/speech18.mp3', bgm: 'music/music18.mp3' },
-      { img: 'graphics/19.jpg', voice: 'assets/speech19.mp3', bgm: 'music/伴奏.mp3' } // 伴奏放最後一頁
+      { img: 'graphics/0.jpg',  voice: 'speech/speech0.mp3',  bgm: 'music/music0.mp3' },
+      { img: 'graphics/1.jpg',  voice: 'speech/speech1.mp3',  bgm: 'music/music1.mp3' },
+      { img: 'graphics/2.jpg',  voice: 'speech/speech2.mp3',  bgm: 'music/music2.mp3' },
+      { img: 'graphics/3.jpg',  voice: 'speech/speech3.mp3',  bgm: 'music/music3.mp3' },
+      { img: 'graphics/4.jpg',  voice: 'speech/speech4.mp3',  bgm: 'music/music4.mp3' },
+      { img: 'graphics/5.jpg',  voice: 'speech/speech5.mp3',  bgm: 'music/music5.mp3' },
+      { img: 'graphics/6.jpg',  voice: 'speech/speech6.mp3',  bgm: 'music/music6.mp3' },
+      { img: 'graphics/7.jpg',  voice: 'speech/speech7.mp3',  bgm: 'music/music7.mp3' },
+      { img: 'graphics/8.jpg',  voice: 'speech/speech8.mp3',  bgm: 'music/music8.mp3' },
+      { img: 'graphics/9.jpg',  voice: 'speech/speech9.mp3',  bgm: 'music/music9.mp3' },
+      { img: 'graphics/10.jpg', voice: 'speech/speech10.mp3', bgm: 'music/music10.mp3' },
+      { img: 'graphics/11.jpg', voice: 'speech/speech11.mp3', bgm: 'music/music11.mp3' },
+      { img: 'graphics/12.jpg', voice: 'speech/speech12.mp3', bgm: 'music/music12.mp3' },
+      { img: 'graphics/13.jpg', voice: 'speech/speech13.mp3', bgm: 'music/music13.mp3' },
+      { img: 'graphics/14.jpg', voice: 'speech/speech14.mp3', bgm: 'music/music14.mp3' },
+      { img: 'graphics/15.jpg', voice: 'speech/speech15.mp3', bgm: 'music/music15.mp3' },
+      { img: 'graphics/16.jpg', voice: 'speech/speech16.mp3', bgm: 'music/music16.mp3' },
+      { img: 'graphics/17.jpg', voice: 'speech/speech17.mp3', bgm: 'music/music17.mp3' },
+      { img: 'graphics/18.jpg', voice: 'speech/speech18.mp3', bgm: 'music/music18.mp3' },
+      { img: 'graphics/19.jpg', voice: 'speech/speech19.mp3', bgm: 'music/伴奏.mp3' } // 伴奏放最後一頁
     ];
 
     let currentPage = 0;
