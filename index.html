@@ -22,7 +22,6 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    /* 繪本容器 */
     .book-container {
       position: relative;
       width: 100vw;
@@ -35,7 +34,6 @@
       background: #000;
     }
 
-    /* 圖片顯示 */
     .book-image {
       max-width: 100%;
       max-height: 100%;
@@ -43,7 +41,6 @@
       pointer-events: none;
     }
 
-    /* 左右點擊觸控區 */
     .touch-zone {
       position: absolute;
       top: 0;
@@ -52,14 +49,9 @@
       z-index: 10;
       cursor: pointer;
     }
-    .touch-left {
-      left: 0;
-    }
-    .touch-right {
-      right: 0;
-    }
+    .touch-left { left: 0; }
+    .touch-right { right: 0; }
 
-    /* 右上角靜音按鈕 */
     .mute-btn {
       position: absolute;
       top: 20px;
@@ -79,11 +71,8 @@
       backdrop-filter: blur(4px);
       transition: all 0.2s ease;
     }
-    .mute-btn:active {
-      transform: scale(0.9);
-    }
+    .mute-btn:active { transform: scale(0.9); }
 
-    /* 頁碼提示 */
     .page-indicator {
       position: absolute;
       bottom: 15px;
@@ -102,53 +91,82 @@
   <div class="book-container">
     <img id="book-img" class="book-image" src="" alt="繪本圖片">
 
-    <!-- 左、右觸控點擊區 -->
+    <!-- 左右點擊翻頁 -->
     <div class="touch-zone touch-left" onclick="prevPage()"></div>
     <div class="touch-zone touch-right" onclick="nextPage()"></div>
 
-    <!-- 右上角靜音按鈕 -->
+    <!-- 右上角靜音開關 -->
     <button id="mute-btn" class="mute-btn" onclick="toggleMute()">🔊</button>
 
-    <!-- 當前頁數標示 -->
+    <!-- 頁碼標示 -->
     <div id="page-indicator" class="page-indicator">1 / 20</div>
 
-    <!-- 背景語音播放器 -->
-    <audio id="book-audio" src=""></audio>
+    <!-- 雙音軌播放器 -->
+    <audio id="bgm-audio" src="" loop></audio>
+    <audio id="voice-audio" src=""></audio>
   </div>
 
   <script>
-    const TOTAL_PAGES = 20;
-    const pages = [];
-
-    // 依據檔名格式自動建立 20 頁的路徑
-    for (let i = 1; i <= TOTAL_PAGES; i++) {
-      pages.push({
-        // ⚠️ 如果你的圖片是 1.jpg~20.jpg，請把下行的 page${i} 改成 ${i}
-        img: `assets/1.jpg`,
-        // ⚠️ 如果你的音檔是 1.mp3~20.mp3，請把下行的 page${i} 改成 ${i}
-        audio: `assets/music1.mp3`
-      });
-    }
+    // -------------------------------------------------------------
+    // 手動或對應 20 頁的素材資料
+    // 如果第 1~2 頁用 bgm1，第 3~4 頁用 bgm2 ... 可以在這裡彈性分配！
+    // -------------------------------------------------------------
+    const pages = [
+      { img: 'assets/0.jpg',  voice: 'assets/speech0.mp3',  bgm: 'assets/music0.mp3' },
+      { img: 'assets/1.jpg',  voice: 'assets/speech1.mp3',  bgm: 'assets/music1.mp3' },
+      { img: 'assets/2.jpg',  voice: 'assets/speech2.mp3',  bgm: 'assets/music2.mp3' },
+      { img: 'assets/3.jpg',  voice: 'assets/speech3.mp3',  bgm: 'assets/music3.mp3' },
+      { img: 'assets/4.jpg',  voice: 'assets/speech4.mp3',  bgm: 'assets/music4.mp3' },
+      { img: 'assets/5.jpg',  voice: 'assets/speech5.mp3',  bgm: 'assets/music5.mp3' },
+      { img: 'assets/6.jpg',  voice: 'assets/speech6.mp3',  bgm: 'assets/music6.mp3' },
+      { img: 'assets/7.jpg',  voice: 'assets/speech7.mp3',  bgm: 'assets/music7.mp3' },
+      { img: 'assets/8.jpg',  voice: 'assets/speech8.mp3',  bgm: 'assets/music8.mp3' },
+      { img: 'assets/9.jpg', voice: 'assets/speech9.mp3', bgm: 'assets/music9.mp3' },
+      { img: 'assets/10.jpg', voice: 'assets/speech10.mp3', bgm: 'assets/music10.mp3' },
+      { img: 'assets/11.jpg', voice: 'assets/speech11.mp3', bgm: 'assets/music11.mp3' },
+      { img: 'assets/12.jpg', voice: 'assets/speech12.mp3', bgm: 'assets/music12.mp3' },
+      { img: 'assets/13.jpg', voice: 'assets/speech13.mp3', bgm: 'assets/music13.mp3' },
+      { img: 'assets/14.jpg', voice: 'assets/speech14.mp3', bgm: 'assets/music14.mp3' },
+      { img: 'assets/15.jpg', voice: 'assets/speech15.mp3', bgm: 'assets/music15.mp3' },
+      { img: 'assets/16.jpg', voice: 'assets/speech16.mp3', bgm: 'assets/music16.mp3' },
+      { img: 'assets/17.jpg', voice: 'assets/speech17.mp3', bgm: 'assets/music17.mp3' },
+      { img: 'assets/18.jpg', voice: 'assets/speech18.mp3', bgm: 'assets/music18.mp3' },
+      { img: 'assets/19.jpg', voice: 'assets/speech19.mp3', bgm: 'assets/伴奏.mp3' } // 伴奏放最後一頁
+    ];
 
     let currentPage = 0;
     let isMuted = false;
 
     const imgEl = document.getElementById('book-img');
-    const audioEl = document.getElementById('book-audio');
+    const voiceEl = document.getElementById('voice-audio');
+    const bgmEl = document.getElementById('bgm-audio');
     const muteBtn = document.getElementById('mute-btn');
     const pageIndicator = document.getElementById('page-indicator');
+
+    // 背景音樂音量維持 30%，避免蓋過旁白語音
+    bgmEl.volume = 0.3;
 
     function renderPage() {
       const page = pages[currentPage];
       imgEl.src = page.img;
-      audioEl.src = page.audio;
+      voiceEl.src = page.voice;
+      
+      // 如果下一頁的背景音樂跟這一頁不同，才重新更換 BGM 播放
+      const currentBgmName = bgmEl.getAttribute('data-current');
+      if (currentBgmName !== page.bgm) {
+        bgmEl.src = page.bgm;
+        bgmEl.setAttribute('data-current', page.bgm);
+        if (!isMuted) {
+          bgmEl.currentTime = 0;
+          bgmEl.play().catch(err => console.log("BGM 播放需點擊互動:", err));
+        }
+      }
+
       pageIndicator.innerText = `${currentPage + 1} / ${pages.length}`;
 
       if (!isMuted) {
-        audioEl.currentTime = 0;
-        audioEl.play().catch(err => {
-          console.log("自動播放需先點擊頁面一次:", err);
-        });
+        voiceEl.currentTime = 0;
+        voiceEl.play().catch(err => console.log("語音播放需點擊互動:", err));
       }
     }
 
@@ -168,12 +186,14 @@
 
     function toggleMute() {
       isMuted = !isMuted;
-      audioEl.muted = isMuted;
+      voiceEl.muted = isMuted;
+      bgmEl.muted = isMuted;
       muteBtn.innerText = isMuted ? '🔇' : '🔊';
 
       if (!isMuted) {
-        audioEl.currentTime = 0;
-        audioEl.play();
+        voiceEl.currentTime = 0;
+        voiceEl.play();
+        bgmEl.play();
       }
     }
 
